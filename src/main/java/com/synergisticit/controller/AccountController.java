@@ -28,6 +28,7 @@ public class AccountController {
 	
 	@RequestMapping({"/form","","/"})
 	public String accountForm(Account account, Model model) {
+		model.addAttribute("nextId",accountService.getNextId());
 		model.addAttribute("accountTypes", AccountType.values());
 		model.addAttribute("accounts", accountService.findAll());
 		model.addAttribute("customers", customerService.findAll());
@@ -43,7 +44,7 @@ public class AccountController {
 		model.addAttribute("accountTypes", AccountType.values());
 		model.addAttribute("branches", branchService.findAll());
 		model.addAttribute("accounts", accountService.findAll());
-		model.addAttribute("customers", accountService.findAll());
+		model.addAttribute("customers", customerService.findAll());
 		if(br.hasErrors()) {
 			System.out.println(br.getAllErrors());
 			model.addAttribute("hasErrors",br.hasErrors());

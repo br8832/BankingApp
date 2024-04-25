@@ -10,7 +10,9 @@ import com.synergisticit.repository.RoleRepository;
 @Service
 public class RoleService {
 @Autowired RoleRepository roleRepository;
-	
+	public Long getNextId() {
+		return roleRepository.nextId();
+	}	
 	public Role save(Role role) {
 		return roleRepository.save(role);
 		

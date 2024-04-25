@@ -13,7 +13,10 @@ import com.synergisticit.domain.Customer;
 @Component
 public class CustomerValidator implements Validator{
 	// Regular expression pattern for SSN (Social Security Number)
-    private static final String SSN_PATTERN = "^(?!000|666|9\\d\\d)\\d{3}-(?!00)\\d{2}-(?!0000)\\d{4}$";
+	// actual SSN "^(?!000|666|9\\d\\d)\\d{3}-(?!00)\\d{2}-(?!0000)\\d{4}$";
+	// just a simple ddd-dd-dddd
+    private static final String SSN_PATTERN = "^\\d{3}-\\d{2}-\\d{4}$";
+
 
     public static boolean isSSN(String ssn) {
         // Create a Pattern object

@@ -2,13 +2,13 @@
     pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="f" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-
+<%@ taglib uri="http://www.springframework.org/security/tags" prefix="sec" %>
 <!DOCTYPE html>
 <html>
 <head>
+<title>Customer Form</title>
 <meta charset="UTF-8">
-<link rel="icon" type="image/png" href="https://i.pinimg.com/736x/7a/91/2f/7a912ffad65f68916e118edda61e4494.jpg
-">
+<link rel="icon" type="image/png" href="https://i.pinimg.com/736x/7a/91/2f/7a912ffad65f68916e118edda61e4494.jpg">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 <style>
 body {
@@ -62,17 +62,31 @@ h1 {
     color: #ff1493 !important; /* Pink label color */
     font-weight: bold;
 }
+.address-line {
+    overflow: hidden;
+    
+    text-overflow: ellipsis;
+}
 </style>
 </head>
 <body>
 <div class="container">
+
+	<sec:authorize access="isAuthenticated">
+<br>Welcome <sec:authentication property="principal.username"/>
+<sec:authentication property="principal.authorities"/>
+</sec:authorize>
+<sec:authorize access="!isAuthenticated">
+	<br> <a href="login">login</a>
+</sec:authorize>
+<br>
     <h1 class="text-center">Customer Form</h1>
     <br>Context Path: <%= request.getContextPath() %>
-    <f:form action="saveCustomer" method="POST" modelAttribute="customer">
+    <f:form action="saveCustomer" modelAttribute="customer">
         <table class="table">
             <tr>
                 <td class="label">Customer ID</td>
-                <td><f:input type="text" class="form-control" path="id" value="${c.getId()}" /></td>
+                <td><f:input type="text" class="form-control" readonly="true" path="id" value="${nextId}" /></td>
                 <td><f:errors path="id"  cssClass="error"></f:errors></td>
             </tr>
 
@@ -86,12 +100,9 @@ h1 {
                 <td class="label">Gender</td>
                 <td>
                     <c:forEach items="${genders}" var="g">
-                        <c:if test="${c.getGender().equals(g.toString())}">
-                            <f:radiobutton path="gender"  label="${g}" value="${g}" checked="checked" />
-                        </c:if>
-                        <c:if test="${!c.getGender().equals(g.toString())}">
-                            <f:radiobutton path="gender" label="${g}" value="${g}"/>
-                        </c:if>
+                    	<f:radiobutton path="gender"  label="${g}" 
+                    	value="${g}" checked="${c.getGender().equals(g)?'checked':''}" />
+                       
                     </c:forEach>
                 </td>
                 <td><f:errors path="gender"  cssStyle="color:red;"></f:errors></td>
@@ -152,8 +163,6 @@ h1 {
                 </td>
                 <td><f:errors path="user"  cssStyle="color:red;"></f:errors></td>
             </tr>
-            <!-- Add more form elements here with appropriate labels -->
-
             <tr>
                 <td colspan="3" align="center"><input type="submit" class="submit-button" value="Submit"/></td>
             </tr>
@@ -170,15 +179,15 @@ h1 {
             </tr>
             <c:forEach items="${customers}" var="cust">
                 <tr>
-                    <td>${cust.getId()}</td>
-                    <td>${cust.getName()}</td>
-                    <td>${cust.getGender()}</td>
-                    <td>${cust.getDob()}</td>
-                    <td>${cust.getMobile()}</td>
-                    <td>${cust.getAddress()}</td>
-                    <td>${cust.getSSN()}</td>
-                    <td>
-                        <a href="updateCustomer?id=${cust.getId()}">Update</a>
+                    <td width="5%">${cust.getId()}</td>
+                    <td width="15%">${cust.getName()}</td>
+                    <td width="5%">${cust.getGender()}</td>
+                    <td width="12%">${cust.getDob()}</td>
+                    <td width="13%">${cust.getMobile()}</td>
+                    <td width="25%" class="address-line">${cust.getAddress().readable()}</td>
+                    <td width="15%">${cust.getSSN()}</td>
+                    <td width="10%">
+                        <a href="updateCustomer?id=${cust.getId()}">Update</a>|
                         <a href="deleteCustomer?id=${cust.getId()}">Delete</a>
                     </td>
                 </tr>

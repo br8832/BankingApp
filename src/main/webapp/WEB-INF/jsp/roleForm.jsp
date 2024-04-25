@@ -2,6 +2,7 @@
     pageEncoding="ISO-8859-1"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="f" %>
+<%@ taglib uri="http://www.springframework.org/security/tags" prefix="sec" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -80,14 +81,22 @@
 
 <div class="container">
 
+	<sec:authorize access="isAuthenticated">
+<br>Welcome <sec:authentication property="principal.username"/>
+<sec:authentication property="principal.authorities"/>
+</sec:authorize>
+<sec:authorize access="!isAuthenticated">
+	<br> <a href="login">login</a>
+</sec:authorize>
+<br>
     <h1>Role Form</h1>
-
+	
     <f:form action="saveRole" modelAttribute="role">
         <table border="1">
             <tr>
                 <td>Id: </td>
                 <td>
-                    <f:input path="id" value="${r.getId()}" />
+                    <f:input path="id" readonly="true" value="${nextId}" />
                 </td>
                 <td><f:errors path="id"  cssStyle="color:purple;"></f:errors></td>
             </tr>

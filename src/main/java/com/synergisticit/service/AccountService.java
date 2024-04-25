@@ -1,5 +1,6 @@
 package com.synergisticit.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,10 +11,12 @@ import com.synergisticit.repository.AccountRepository;
 @Service
 public class AccountService {
 @Autowired AccountRepository accountRepository;
-	
+	public Long getNextId() {
+		return accountRepository.nextId();
+	}
 	public Account save(Account account) {
+		account.setDateOpened(LocalDate.now());
 		return accountRepository.save(account);
-		
 	}
 	public List<Account> findAll()
 	{

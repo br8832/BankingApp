@@ -23,8 +23,9 @@ public class UserController {
 	@Autowired RoleService roleService;
 	@Autowired UserValidator validator;
 	
-	@RequestMapping({"/form","","/"})
+	@RequestMapping({"/form","/"})
 	public String userForm(User user, Model model) {
+		model.addAttribute("nextId", userService.getNextId());
 		model.addAttribute("users", userService.findAll());
 		model.addAttribute("roles", roleService.findAll());
 		return "userForm";
@@ -35,7 +36,7 @@ public class UserController {
 	public String savesTheUser( @ModelAttribute User user, Model model, BindingResult br) {
 		validator.validate(user, br);
 		System.out.println("br.hasErrors(): "+br.hasErrors());
-		System.out.println("User e: "+user.toString());
+		System.out.println("User u: "+user.toString());
 		model.addAttribute("users", userService.findAll());
 		model.addAttribute("roles", roleService.findAll());
 		if(br.hasErrors()) {

@@ -2,6 +2,7 @@
     pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="f" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://www.springframework.org/security/tags" prefix="sec" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -93,11 +94,19 @@
 </head>
 <body>
 <div class="container">
+	<sec:authorize access="isAuthenticated">
+<br>Welcome <sec:authentication property="principal.username"/>
+<sec:authentication property="principal.authorities"/>
+</sec:authorize>
+<sec:authorize access="!isAuthenticated">
+	<br> <a href="login">login</a>
+</sec:authorize>
+<br>
     <h1>Account Form</h1>
     <f:form action="saveAccount" method="POST" modelAttribute="account">
         <div class="form-group">
             <label class="form-label" for="id">Id:</label>
-            <f:input type="text" class="form-control" path="id" value="${acc.getId()}" />
+            <f:input type="text" readonly="true" class="form-control" id="id" path="id" value="${nextId}" />
             <f:errors path="id" cssClass="error" />
         </div>
 
@@ -105,30 +114,24 @@
     <label class="form-label">Branch:</label>
     <div>
         <c:forEach items="${branches}" var="branch">
-            <c:if test="${acc.getBranch().getId().equals(branch.getId())}">
-                <f:radiobutton path="branch" label="${branch.getName()}" value="${branch.getId()}" checked="checked" />
-            </c:if>
-            <c:if test="${!acc.getBranch().getId().equals(branch.getId())}">
-                <f:radiobutton path="branch" label="${branch.getName()}" value="${branch.getId()}" />
-            </c:if>
+        <f:radiobutton path="branch"  label="${branch.getName()}" value="${branch.getId()}" 
+        checked="${acc.getBranch().getId().equals(branch.getId()) ? 'checked' : ''}" />
         </c:forEach>
+        <f:errors path="branch" cssClass="error"/>
     </div>
-    <f:errors path="branch" cssClass="error-message" />
+    
 </div>
 
        <div class="form-group">
     <label class="form-label">Account Type:</label>
     <div>
         <c:forEach items="${accountTypes}" var="type">
-            <c:if test="${acc.getAccountType().getId().equals(type.getId())}">
-                <f:radiobutton path="accountType" label="${type}" value="${type}" checked="checked" />
-            </c:if>
-            <c:if test="${!acc.getAccountType().getId().equals(type.getId())}">
-                <f:radiobutton path="accountType" label="${type}" value="${type}" />
-            </c:if>
+        <f:radiobutton path="accountType"  label="${type}" value="${type}" 
+        checked="${acc.getAccountType().equals(type) ? 'checked' : ''}" />
         </c:forEach>
+         <f:errors path="accountType" cssClass="error" />
     </div>
-    <f:errors path="accountType" cssClass="error-message" />
+   
 </div>
         <div class="form-group">
             <label class="form-label" for="holder">Holder:</label>
@@ -136,9 +139,10 @@
             <f:errors path="holder" cssClass="error" />
         </div>
 
-        <div class="form-group">
+        <div style="display:${acc==null?'none':'inherit'}" class="form-group">
             <label class="form-label" for="dateOpened">Date Opened:</label>
-            <f:input type="date" class="form-control" path="dateOpened" value="${acc.getDateOpened()}" />
+            <f:input type="date" class="form-control" id="dateOpened" path="dateOpened" 
+            value="${acc.getDateOpened()}" readonly="true"/>
             <f:errors path="dateOpened" cssClass="error" />
         </div>
 
@@ -152,15 +156,12 @@
     <label class="form-label">Customer:</label>
     <div>
         <c:forEach items="${customers}" var="customer">
-            <c:if test="${acc.getCustomer().getId().equals(customer.getId())}">
-                <f:radiobutton path="customer" label="${customer.getName()}" value="${customer.getId()}" checked="checked" />
-            </c:if>
-            <c:if test="${!acc.getCustomer().getId().equals(customer.getId())}">
-                <f:radiobutton path="customer" label="${customer.getName()}" value="${customer.getId()}" />
-            </c:if>
+        	<f:radiobutton path="customer"  label="${customer.getName()}" value="${customer.getId()}" 
+        checked="${acc.getCustomer().getId().equals(customer.getId()) ? 'checked' : ''}" />
         </c:forEach>
+        <f:errors path="customer" cssClass="error" />
     </div>
-    <f:errors path="customer" cssClass="error-message" />
+    
 </div>
 
         <div class="form-group" align="center">

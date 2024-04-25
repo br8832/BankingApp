@@ -10,7 +10,9 @@ import com.synergisticit.repository.UserRepository;
 @Service
 public class UserService {
 	@Autowired UserRepository userRepository;
-	
+	public Long getNextId() {
+		return userRepository.nextId();
+	}
 	public User save(User user) {
 		return userRepository.save(user);
 		
@@ -24,6 +26,9 @@ public class UserService {
 	}
 	public User findById(Long id) {
 		return userRepository.findById(id).orElse(null);
+	}
+	public User findByUsername(String username) {
+		return userRepository.findByUsername(username);
 	}
 	
 }

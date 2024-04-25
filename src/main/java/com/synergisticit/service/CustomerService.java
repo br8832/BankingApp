@@ -10,7 +10,9 @@ import com.synergisticit.repository.CustomerRepository;
 @Service
 public class CustomerService {
 @Autowired CustomerRepository customerRepository;
-	
+public Long getNextId() {
+	return customerRepository.nextId();
+}
 	public Customer save(Customer customer) {
 		return customerRepository.save(customer);
 		

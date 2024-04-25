@@ -10,7 +10,9 @@ import com.synergisticit.repository.BranchRepository;
 @Service
 public class BranchService {
 	@Autowired BranchRepository branchRepository;
-	
+	public Long getNextId() {
+		return branchRepository.nextId();
+	}
 	public Branch save(Branch branch) {
 		return branchRepository.save(branch);
 		

@@ -22,8 +22,9 @@ public class CustomerController {
 	@Autowired
 	private CustomerValidator customerValidator;
 	
-	@RequestMapping({"/form","","/"})
+	@RequestMapping({"/form","/"})
 	public String customerForm(Customer customer, Model m) {
+		m.addAttribute("nextId", customerService.getNextId());
 		m.addAttribute("genders", Gender.values());
 		m.addAttribute("customers", customerService.findAll());
 		m.addAttribute("users", userService.findAll());
@@ -34,7 +35,7 @@ public class CustomerController {
 	public String save(@ModelAttribute Customer customer,Model model,BindingResult br) {
 		customerValidator.validate(customer, br);
 		System.out.println("br.hasErrors(): "+br.hasErrors());
-		System.out.println("customer e: "+customer.toString());
+		System.out.println("customer c: "+customer.toString());
 		model.addAttribute("customers", customerService.findAll());
 		model.addAttribute("genders", Gender.values());
 		model.addAttribute("users", userService.findAll());
@@ -51,9 +52,9 @@ public class CustomerController {
 	
 	@RequestMapping("/updateCustomer")
 	public String update(Customer customer,Model model) {
-		
 		Customer c = customerService.findById(customer.getId());
 		System.out.println("retrievedAcustomer: "+c);
+		model.addAttribute("genders", Gender.values());
 		model.addAttribute("customers", customerService.findAll());
 		model.addAttribute("users", userService.findAll());
 		model.addAttribute("c", c);

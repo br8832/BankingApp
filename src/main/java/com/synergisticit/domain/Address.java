@@ -29,4 +29,7 @@ public class Address {
 	@NotEmpty
 	private String zip;
 
+	public String readable() {
+		return line1+" "+city+","+state+" "+zip;
+	}
 }

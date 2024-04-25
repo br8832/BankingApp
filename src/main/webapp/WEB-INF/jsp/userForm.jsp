@@ -66,9 +66,24 @@
             margin-top: 50px;
         }
 
-        .table th,
-        .table td {
-            vertical-align: middle;
+        .table-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #fff; /* White */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Light shadow */
+            overflow-x: auto; /* Add horizontal scrollbar if needed */
+        }
+
+        .table-container table {
+            margin: 0; /* Reset default margin */
+            width: 100%; /* Ensure table fills container */
+        }
+
+        .table-container th,
+        .table-container td {
+            padding: 8px; /* Adjust padding as needed */
         }
 
         .action-links a {
@@ -90,7 +105,7 @@
         <table class="table">
             <tr>
                 <td><label for="id" class="form-label">User Id:</label></td>
-                <td><f:input path="id" value="${u.getId()}" class="form-control"/></td>
+                <td><f:input path="id" readonly="true" value="${nextId}" class="form-control"/></td>
                 <td><f:errors path="id" cssStyle="color:purple;"></f:errors></td>
             </tr>
             <tr>
@@ -122,7 +137,9 @@
             </tr>
         </table>
     </f:form>
+</div>
 
+<div class="container table-container">
     <h1 class="text-center list-heading">List of Users</h1>
     <table class="table">
         <thead>
@@ -159,4 +176,3 @@
 
 </body>
 </html>
-

@@ -30,8 +30,8 @@ public class Role {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name="roleId")
 	private Long id;
-	
 	@NotEmpty
+	@Column(name="roleName")
 	private String name;
 	@ToString.Exclude
 	@JsonIgnore  //To avoid infinite recursion, the List(User> should not be serialized with role object.
