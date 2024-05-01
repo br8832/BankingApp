@@ -1,11 +1,21 @@
 package com.synergisticit.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import com.synergisticit.domain.Customer;
+import com.synergisticit.domain.User;
 
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
 	@Query("SELECT MAX(id) + 1 FROM Customer")
     Long nextId();
+	@Query("SELECT COUNT(c) > 0 FROM Customer c WHERE c.user.username = :username")
+    boolean existsByUserUsername(String username);
+	@Query("SELECT u FROM User u WHERE NOT EXISTS (SELECT c FROM Customer c WHERE c.user = u)")
+    List<User> findUsersNotAssociatedWithCustomer();
+	@Query(value = "SELECT u From User u WHERE u.username = :username")
+	User findByUserUsername(String username);
+	
 }

@@ -18,16 +18,26 @@ import com.synergisticit.service.UserService;
 @Controller
 @RequestMapping("/user")
 public class UserController {
-	
+	static List<String> CRUDMethods = List.of("CREATE","UPDATE","DELETE");
 	@Autowired UserService userService;
 	@Autowired RoleService roleService;
 	@Autowired UserValidator validator;
 	
+	@ModelAttribute("roles")
+	public List<Role> getRoles(){
+		return roleService.findAll();
+	}
+	@ModelAttribute("users")
+	public List<User> getUsers(){
+		return userService.findAll();
+	}
+	
 	@RequestMapping({"/form","/"})
 	public String userForm(User user, Model model) {
 		model.addAttribute("nextId", userService.getNextId());
-		model.addAttribute("users", userService.findAll());
-		model.addAttribute("roles", roleService.findAll());
+		//model.addAttribute("users", userService.findAll());
+		//model.addAttribute("roles", roleService.findAll());
+		model.addAttribute("ops",CRUDMethods);
 		return "userForm";
 	}
 	
@@ -37,8 +47,8 @@ public class UserController {
 		validator.validate(user, br);
 		System.out.println("br.hasErrors(): "+br.hasErrors());
 		System.out.println("User u: "+user.toString());
-		model.addAttribute("users", userService.findAll());
-		model.addAttribute("roles", roleService.findAll());
+		//model.addAttribute("users", userService.findAll());
+		//model.addAttribute("roles", roleService.findAll());
 		if(br.hasErrors()) {
 			System.out.println(br.getAllErrors());
 			model.addAttribute("hasErrors",br.hasErrors());
@@ -56,10 +66,10 @@ public class UserController {
 		
 		User u = userService.findById(user.getId());
 		List<Role> retrievedRoles = u.getRoles();
-		model.addAttribute("users", userService.findAll());
-		model.addAttribute("roles", roleService.findAll());
+		//model.addAttribute("users", userService.findAll());
+		//model.addAttribute("roles", roleService.findAll());
 		model.addAttribute("u", u);
-		model.addAttribute("retrieved", retrievedRoles);
+		//model.addAttribute("retrieved", retrievedRoles);
 		return "userForm";
 	}
 	

@@ -1,20 +1,21 @@
 package com.synergisticit.validation;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 import com.synergisticit.domain.Transaction;
+import com.synergisticit.service.AccountService;
 
 @Component
 public class TransactionValidator implements Validator {
-
+	@Autowired 
+	AccountService accountService;
 	@Override
 	public boolean supports(Class<?> clazz) {
-		// TODO Auto-generated method stub
 		return Transaction.class.equals(clazz);
-
 	}
 
 	@SuppressWarnings("incomplete-switch")
@@ -30,6 +31,8 @@ public class TransactionValidator implements Validator {
 		switch(t.getType()) {
 		case WITHDRAW:
 			if(t.getFromAccount()==null) errors.rejectValue("fromAccount","fromAccount.empty","Choose fromAccount");
+			else if(accountService.findById(t.getFromAccount()).getBalance() < t.getAmount())
+				errors.rejectValue("amount", "amount.negative","This amount puts you in the negatives");
 			break;
 		case TRANSFER:
 			if(t.getFromAccount()==null) errors.rejectValue("fromAccount","fromAccount.empty","Choose fromAccount");

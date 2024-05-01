@@ -11,12 +11,16 @@ import com.synergisticit.repository.AccountRepository;
 @Service
 public class AccountService {
 @Autowired AccountRepository accountRepository;
+	
 	public Long getNextId() {
 		return accountRepository.nextId();
 	}
 	public Account save(Account account) {
 		account.setDateOpened(LocalDate.now());
 		return accountRepository.save(account);
+	}
+	public List<Account> findByUsername(String username){
+		return accountRepository.findByCustomer_User_Username(username);
 	}
 	public List<Account> findAll()
 	{

@@ -23,7 +23,7 @@ public class LoginController {
 		return "home";
 	}
 	
-	@RequestMapping("login")
+	@RequestMapping("/login")
 	public String login(@RequestParam(value="error", required=false) String error,
 			@RequestParam(value="logout", required=false) String logout,
 			HttpServletRequest req, HttpServletResponse res, Model model

@@ -67,43 +67,12 @@ body.form-body {
 .table td {
     color: #333333; /* Dark gray text color */
 }
-ul:before{
-    content:attr(aria-label);
-    font-size:120%;
-    font-weight:bold;
-    margin-left:-15px;
-}
 
 </style>
 <!-- Link Bootstrap CSS -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 </head>
 <body class="form-body">
-<nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container">
-            <a class="navbar-brand" href="/">Home</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <sec:authorize access="hasAuthority('Admin')">
-                        <li class="nav-item"><a class="nav-link" href="/account/">Account Form</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/branch/">Branch Form</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/customer/">Customer Form</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/role/">Role Form</a></li>
-                    </sec:authorize>
-                    <sec:authorize access="isAuthenticated">
-                        <li class="nav-item"><a class="nav-link" href="/user/">User Form</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/transaction/">Transaction Form</a></li>
-                    </sec:authorize>
-                    <sec:authorize access="isAuthenticated">
-                        <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
-                    </sec:authorize>
-                </ul>
-            </div>
-        </div>
-    </nav>
 <h1>Request Information</h1>
 <div class="row">
     <div class="col-md-6">
@@ -132,13 +101,6 @@ ul:before{
     <p>Context Path: ${pageContext.request.userPrincipal}</p>
     <h1 class="text-center">
     ${t.getType()} Transaction Form</h1>
-    <c:if test="${not empty ops}">
-                <ul aria-label="OPERACIONES:">
-                    <c:forEach items="${ops}" var="op">
-                        <li>${op}</li>
-                    </c:forEach>
-                </ul>
-            </c:if>
     <f:form action="saveTransaction" method="POST" modelAttribute="transaction">
         <div class="mb-3">
             <label for="id" class="form-label">ID</label>
@@ -146,7 +108,7 @@ ul:before{
             <f:errors path="id" cssClass="error-message" />
         </div>
 		
-		<div id="fromAccountDiv" style="display:none" class="mb-3">
+		<div style="display:${t.getType().toString().equals('DEPOSIT')?'none':'inherit'}" class="mb-3">
             <label for="fromAccount" class="form-label">From Account</label>
             <f:select path="fromAccount" class="form-select">
                 <c:forEach items="${accounts}" var="a">
@@ -156,7 +118,7 @@ ul:before{
             <f:errors path="fromAccount" cssClass="error-message" />
         </div>
         
-        <div id="toAccountDiv" style="display:none" class="mb-3">
+        <div style="display:${t.getType().toString().equals('WITHDRAW')?'none':'inherit'}" class="mb-3">
             <label for="toAccount" class="form-label">To Account</label>
             <f:select path="toAccount" class="form-select">
                 <c:forEach items="${accounts}" var="a">
@@ -176,27 +138,10 @@ ul:before{
             <label for="type" class="form-label">Transaction Type</label>
             <div>
                 <c:forEach items="${transactionTypes}" var="type">
-		<f:radiobutton path="type"  onchange="toggleAccountFields('${type}')" label="${type}" value="${type}" checked="${t.getType() == type ? 'checked' : ''}" />
+		<f:radiobutton path="type"  label="${type}" value="${type}" checked="${t.getType() == type ? 'checked' : ''}" />
                 </c:forEach>
             </div>
             <f:errors path="type" cssClass="error-message" />
-            <script>
-    function toggleAccountFields(type) {
-        var fromAccountDiv = document.getElementById("fromAccountDiv");
-        var toAccountDiv = document.getElementById("toAccountDiv");
-
-        if (type === "DEPOSIT") {
-            fromAccountDiv.style.display = "none";
-            toAccountDiv.style.display = "inherit";
-        } else if (type === "WITHDRAW") {
-            fromAccountDiv.style.display = "inherit";
-            toAccountDiv.style.display = "none";
-        } else {
-            fromAccountDiv.style.display = "inherit";
-            toAccountDiv.style.display = "inherit";
-        }
-    }
-</script>
         </div>
 		<div style="display:${t==null?'none':'inherit'}" class="mb-3">
     		<label for="date" class="form-label">Date</label>
@@ -236,7 +181,7 @@ ul:before{
                     <th>Transaction Type</th>
                     <th>Date</th>
                     <th>Comments</th>
-                    <sec:authorize access="hasAuthority('Admin')"><th>Action</th></sec:authorize>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>

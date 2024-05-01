@@ -10,7 +10,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -18,7 +17,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 
 @Configuration
 @EnableMethodSecurity(prePostEnabled = true, securedEnabled = true)
-public class SecurityConfig {
+public class SecurityConfig{
 	@Autowired DataSource dataSource;
 	
 //	@Autowired BCryptPasswordEncoder bCrypt;
@@ -35,28 +34,24 @@ public class SecurityConfig {
 	}
 	
 	@Bean
-	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		http.csrf().disable() //csrf=cross site request forgery
-		.authorizeHttpRequests()
-		.requestMatchers("/").permitAll()
-		.requestMatchers("/login").permitAll()
-		.requestMatchers("/user/form", "/user/","/user/saveUser").permitAll()
-		.requestMatchers("/transaction/form", "/transaction/","/transaction/saveTransaction").permitAll()
-		.requestMatchers("/WEB-INF/jsp/**").permitAll()
-		.anyRequest().authenticated()
-		.and()
-		.formLogin()
-		.loginPage("/login") // login is a URL
-		.successHandler(authenticationSuccessHandler)
-		.and()
-		.exceptionHandling()
-		.accessDeniedHandler(accessDeniedHandler);
-		
-		return http.build();
-	}
-
+	SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
+	        http.csrf().disable()
+	            .authorizeRequests()
+	            	.requestMatchers("/branch/**","/role/**").hasAnyAuthority("Admin")
+	                .requestMatchers("/WEB-INF/jsp/**","/", "/login","/transaction/**","/customer/**","/account/**").permitAll()
+	                .requestMatchers("/static/**","/resources/**","/mp3/**","/images/**", "/css/**").permitAll()
+	                .anyRequest().authenticated()
+	                .and()
+	            .formLogin()
+	                .successHandler(authenticationSuccessHandler)
+	                .and()
+	            .exceptionHandling()
+	                .accessDeniedHandler(accessDeniedHandler);
+	        return http.build();
+	    }
 	@Bean
 	WebSecurityCustomizer webSecurityCustomizer() {
-		return (web) -> web.ignoring().requestMatchers("/images/**", "/css/**");
+		return (web) -> web.ignoring().requestMatchers("/static/**","/resources/**","/mp3/**","/images/**", "/css/**");
 	}
+	
 }

@@ -6,13 +6,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.synergisticit.domain.Customer;
+import com.synergisticit.domain.User;
 import com.synergisticit.repository.CustomerRepository;
 @Service
 public class CustomerService {
-@Autowired CustomerRepository customerRepository;
-public Long getNextId() {
-	return customerRepository.nextId();
-}
+	@Autowired CustomerRepository customerRepository;
+	public List<User> availableUsers(){
+		return customerRepository.findUsersNotAssociatedWithCustomer();
+	}
+	public boolean existsAlready(String username) {
+		return customerRepository.existsByUserUsername(username);
+	}
+	public Long getNextId() {
+		return customerRepository.nextId();
+	}
 	public Customer save(Customer customer) {
 		return customerRepository.save(customer);
 		
@@ -27,4 +34,5 @@ public Long getNextId() {
 	public Customer findById(Long id) {
 		return customerRepository.findById(id).orElse(null);
 	}
+	
 }

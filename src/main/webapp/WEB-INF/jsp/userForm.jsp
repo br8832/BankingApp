@@ -2,6 +2,7 @@
     pageEncoding="ISO-8859-1"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="f" %>
+<%@ taglib uri="http://www.springframework.org/security/tags" prefix="sec" %>
 
 <!DOCTYPE html>
 <html>
@@ -12,6 +13,9 @@
     <title>User Form</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <style>
+    	.navbar-brand, .nav-link{
+    		color: salmon;
+    	}
         body {
             background-color: #f8f9fa; /* Light gray */
             color: #333; /* Dark gray */
@@ -95,12 +99,49 @@
         .action-links a:hover {
             text-decoration: underline;
         }
+        ul:before{
+		    content:attr(aria-label);
+		    font-size:120%;
+		    font-weight:bold;
+		    margin-left:-15px;
+		}
     </style>
 </head>
 <body>
-
 <div class="container form-container">
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+        <a class="navbar-brand" href="/">Home</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <sec:authorize access="hasAuthority('Admin')">
+                    <li class="nav-item"><a class="nav-link" href="/account/">Account Form</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/branch/">Branch Form</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/customer/">Customer Form</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/role/">Role Form</a></li>
+                </sec:authorize>
+                <sec:authorize access="isAuthenticated">
+                    <li class="nav-item"><a class="nav-link" href="/user/">User Form</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/transaction/">Transaction Form</a></li>
+                </sec:authorize>
+                <sec:authorize access="isAuthenticated">
+                    <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
+                </sec:authorize>
+            </ul>
+        </div>
+    </div>
+</nav>
     <h1 class="text-center form-heading">User Form</h1>
+    <c:if test="${not empty ops}">
+                <ul aria-label="OPERACIONES:">
+                    <c:forEach items="${ops}" var="op">
+                        <li>${op}</li>
+                    </c:forEach>
+                </ul>
+            </c:if>
     <f:form action="saveUser" modelAttribute="user">
         <table class="table">
             <tr>
@@ -127,7 +168,7 @@
                 <td><label class="form-label">Roles:</label></td>
                 <td>
                     <c:forEach items="${roles}" var="role">
-                        <f:checkbox path="roles" label="${role.getName()}" value="${role.getId()}" class="form-check-input"/>
+                        <f:checkbox checked="${u.getRoles().contains(role)?'checked':null}" path="roles" label="${role.getName()}" value="${role.getId()}" class="form-check-input"/>
                     </c:forEach>
                 </td>
                 <td><f:errors path="roles" cssStyle="color:purple;"></f:errors></td>
@@ -149,7 +190,7 @@
                 <th>Password</th>
                 <th>Email</th>
                 <th>Roles</th>
-                <th>Action</th>
+                <sec:authorize access="hasAuthority('Admin')"><th>Action</th></sec:authorize>
             </tr>
         </thead>
         <tbody>
@@ -164,10 +205,12 @@
                             ${role.getName()}
                         </c:forEach>
                     </td>
+                    <sec:authorize access="hasAuthority('Admin')">
                     <td class="action-links">
                         <a href="deleteUser?id=${user.getId()}">Delete</a>
                         <a href="updateUser?id=${user.getId()}">Update</a>
                     </td>
+                    </sec:authorize>
                 </tr>
             </c:forEach>
         </tbody>

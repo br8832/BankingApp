@@ -61,10 +61,41 @@
             margin-top: 0.25rem; /* Adjust margin top */
             color: aliceblue
         }
+        ul:before{
+		    content:attr(aria-label);
+		    font-size:120%;
+		    font-weight:bold;
+		    margin-left:-15px;
+		}
     </style>
 </head>
 <body>
 <div class="container">
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+        <a class="navbar-brand" href="/">Home</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <sec:authorize access="hasAuthority('Admin')">
+                    <li class="nav-item"><a class="nav-link" href="/account/">Account Form</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/branch/">Branch Form</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/customer/">Customer Form</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/role/">Role Form</a></li>
+                </sec:authorize>
+                <sec:authorize access="isAuthenticated">
+                    <li class="nav-item"><a class="nav-link" href="/user/">User Form</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/transaction/">Transaction Form</a></li>
+                </sec:authorize>
+                <sec:authorize access="isAuthenticated">
+                    <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
+                </sec:authorize>
+            </ul>
+        </div>
+    </div>
+</nav>
 	<sec:authorize access="isAuthenticated">
 <br>Welcome <sec:authentication property="principal.username"/>
 <sec:authentication property="principal.authorities"/>
@@ -72,6 +103,13 @@
 <sec:authorize access="!isAuthenticated">
 	<br> <a href="login">login</a>
 </sec:authorize>
+<c:if test="${not empty ops}">
+                <ul aria-label="OPERACIONES:">
+                    <c:forEach items="${ops}" var="op">
+                        <li>${op}</li>
+                    </c:forEach>
+                </ul>
+            </c:if>
 <br>
     <h1 class="text-center">Formulario de Sucursal</h1>
     <br>Contexto: <%= request.getContextPath() %>

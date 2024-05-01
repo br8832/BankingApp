@@ -64,14 +64,46 @@ h1 {
 }
 .address-line {
     overflow: hidden;
-    
     text-overflow: ellipsis;
+}
+.nav-link{
+	color: blue;
+}
+ul:before{
+    content:attr(aria-label);
+    font-size:120%;
+    font-weight:bold;
+    margin-left:-15px;
 }
 </style>
 </head>
 <body>
 <div class="container">
-
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+        <a class="navbar-brand" href="/">Home</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <sec:authorize access="hasAuthority('Admin')">
+                    <li class="nav-item"><a class="nav-link" href="/account/">Account Form</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/branch/">Branch Form</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/customer/">Customer Form</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/role/">Role Form</a></li>
+                </sec:authorize>
+                <sec:authorize access="isAuthenticated">
+                    <li class="nav-item"><a class="nav-link" href="/user/">User Form</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/transaction/">Transaction Form</a></li>
+                </sec:authorize>
+                <sec:authorize access="isAuthenticated">
+                    <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
+                </sec:authorize>
+            </ul>
+        </div>
+    </div>
+</nav>
 	<sec:authorize access="isAuthenticated">
 <br>Welcome <sec:authentication property="principal.username"/>
 <sec:authentication property="principal.authorities"/>
@@ -79,6 +111,13 @@ h1 {
 <sec:authorize access="!isAuthenticated">
 	<br> <a href="login">login</a>
 </sec:authorize>
+ <c:if test="${not empty ops}">
+                <ul aria-label="OPERACIONES:">
+                    <c:forEach items="${ops}" var="op">
+                        <li>${op}</li>
+                    </c:forEach>
+                </ul>
+            </c:if>
 <br>
     <h1 class="text-center">Customer Form</h1>
     <br>Context Path: <%= request.getContextPath() %>
@@ -149,22 +188,25 @@ h1 {
                 <td class="label">SSN</td><td><f:input type="text" class="form-control" path="SSN" value="${c.getSSN()}"/></td>
                 <td><f:errors path="SSN"  cssStyle="color:red;"></f:errors></td>
             </tr>
-            <tr>
-                <td class="label">User</td>
-                <td>
-                    <c:forEach items="${users}" var="u">
-                        <c:if test="${c.getUser().getId().equals(u.getId())}">
-                            <f:radiobutton path="user"  label="${u.getUsername()}" value="${u.getId()}" checked="checked" />
-                        </c:if>
-                        <c:if test="${!c.getUser().getId().equals(u.getId())}">
-                            <f:radiobutton path="user" label="${u.getUsername()}" value="${u.getId()}"/>
-                        </c:if>
-                    </c:forEach>
-                </td>
-                <td><f:errors path="user"  cssStyle="color:red;"></f:errors></td>
-            </tr>
-            <tr>
-                <td colspan="3" align="center"><input type="submit" class="submit-button" value="Submit"/></td>
+<tr>
+    <td class="label">User</td>
+    <td>
+        <c:choose>
+            <c:when test="${not empty users}">
+                <c:forEach items="${users}" var="u">
+                   	<f:radiobutton path="user" label="${u.username}" value="${u.id}" 
+                     checked="${ u.getId()==c.getUser().getId() ? 'checked':'' }" />
+                </c:forEach>
+            </c:when>
+            <c:otherwise>
+                Wait for administration to create your user
+            </c:otherwise>
+        </c:choose>
+    </td>
+    <td><f:errors path="user" cssStyle="color:red;"></f:errors></td>
+</tr>
+<tr>            
+<td colspan="3" align="center"><input type="submit" class="submit-button" value="Submit"/></td>
             </tr>
         </table>
     </f:form>
@@ -175,18 +217,18 @@ h1 {
             <tr>
                 <td>Id</td><td>Name</td><td>Gender</td>
                 <td>DOB</td><td>Mobile</td><td>Address</td>
-                <td>SSN</td><td>Action</td>
+                <td>SSN</td><td>Action</td><td>Account</td>
             </tr>
             <c:forEach items="${customers}" var="cust">
                 <tr>
-                    <td width="5%">${cust.getId()}</td>
-                    <td width="15%">${cust.getName()}</td>
-                    <td width="5%">${cust.getGender()}</td>
-                    <td width="12%">${cust.getDob()}</td>
-                    <td width="13%">${cust.getMobile()}</td>
-                    <td width="25%" class="address-line">${cust.getAddress().readable()}</td>
-                    <td width="15%">${cust.getSSN()}</td>
-                    <td width="10%">
+                    <td>${cust.getId()}</td>
+                    <td>${cust.getName()}</td>
+                    <td>${cust.getGender()}</td>
+                    <td>${cust.getDob()}</td>
+                    <td>${cust.getMobile()}</td>
+                    <td class="address-line">${cust.getAddress().readable()}</td>
+                    <td>${cust.getSSN()}</td>
+                    <td>
                         <a href="updateCustomer?id=${cust.getId()}">Update</a>|
                         <a href="deleteCustomer?id=${cust.getId()}">Delete</a>
                     </td>

@@ -3,13 +3,46 @@
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="f" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://www.springframework.org/security/tags" prefix="sec" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+
 <!DOCTYPE html>
 <html>
 <head>
 <link rel="icon" type="image/png" href="https://wizarddojo.files.wordpress.com/2016/01/conkers-bad-fur-day-money.jpg">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 <meta charset="UTF-8">
 <title>AccountForm</title>
 <style>
+ .navbar {
+            background-color: #007bff; /* Blue */
+        }
+
+        .navbar-brand {
+            color: black;
+            font-size: 24px;
+        }
+
+        .navbar-nav {
+            list-style-type: none;
+            text-align: center;
+        }
+
+        .navbar-nav .nav-item {
+            margin-right: 20px;
+            color: black;
+        }
+        
+
+        .navbar-nav .nav-link {
+            color: black;
+            font-size: 18px;
+            transition: color 0.3s ease;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #cceeff; /* Light blue */
+        }
+
     body {
         background-color: #f8f9fa; /* Light gray background */
         font-family: Arial, sans-serif; /* Default font */
@@ -89,11 +122,43 @@
     .error {
         color: red; /* Red text for error messages */
     }
+   ul:before{
+	    content:attr(aria-label);
+	    font-size:120%;
+	    font-weight:bold;
+	    margin-left:-15px;
+	}
+    
 </style>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 </head>
 <body>
 <div class="container">
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+        <a class="navbar-brand" href="/">Home</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <sec:authorize access="hasAuthority('Admin')">
+                    <li class="nav-item"><a class="nav-link" href="/account/">Account Form</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/branch/">Branch Form</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/customer/">Customer Form</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/role/">Role Form</a></li>
+                </sec:authorize>
+                <sec:authorize access="isAuthenticated">
+                    <li class="nav-item"><a class="nav-link" href="/user/">User Form</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/transaction/">Transaction Form</a></li>
+                </sec:authorize>
+                <sec:authorize access="isAuthenticated">
+                    <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
+                </sec:authorize>
+            </ul>
+        </div>
+    </div>
+</nav>
+
 	<sec:authorize access="isAuthenticated">
 <br>Welcome <sec:authentication property="principal.username"/>
 <sec:authentication property="principal.authorities"/>
@@ -101,6 +166,13 @@
 <sec:authorize access="!isAuthenticated">
 	<br> <a href="login">login</a>
 </sec:authorize>
+<c:if test="${not empty ops}">
+                <ul aria-label="OPERACIONES:">
+                    <c:forEach items="${ops}" var="op">
+                        <li>${op}</li>
+                    </c:forEach>
+                </ul>
+            </c:if>
 <br>
     <h1>Account Form</h1>
     <f:form action="saveAccount" method="POST" modelAttribute="account">
@@ -152,17 +224,21 @@
             <f:errors path="balance" cssClass="error" />
         </div>
 
-        <div class="form-group">
-    <label class="form-label">Customer:</label>
-    <div>
+       <label class="form-label">Customer:</label>
+       
+<c:choose>
+    <c:when test="${fn:contains(pageContext.request.userPrincipal.authorities, 'Admin')}">
         <c:forEach items="${customers}" var="customer">
-        	<f:radiobutton path="customer"  label="${customer.getName()}" value="${customer.getId()}" 
-        checked="${acc.getCustomer().getId().equals(customer.getId()) ? 'checked' : ''}" />
+            <f:radiobutton path="customer" label="${customer.name}" value="${customer.id}" 
+                checked="${acc.customer.id == customer.id ? 'checked' : ''}" />
         </c:forEach>
-        <f:errors path="customer" cssClass="error" />
-    </div>
-    
-</div>
+    </c:when>
+    <c:otherwise>
+        <f:radiobutton path="customer" label="${pageContext.request.userPrincipal.name}" 
+            value="${defaultCustomerId}" disabled="true" checked="true" />
+    </c:otherwise>
+</c:choose>
+
 
         <div class="form-group" align="center">
             <input type="submit" class="btn-primary" value="Submit" />

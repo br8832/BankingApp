@@ -65,6 +65,9 @@ public class TransactionService {
         transaction.setDate(truncatedDateTime);
 		return transactionRepository.save(transaction);	
 	}
+	public List<Transaction> findByAccountId(Long id){
+		return transactionRepository.findByAccountId(id);
+	}
 	public List<Transaction> findAll()
 	{
 		return transactionRepository.findAll();
