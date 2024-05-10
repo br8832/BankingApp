@@ -1,6 +1,7 @@
 package com.synergisticit.service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,5 +81,9 @@ public class TransactionService {
 	}
 	public List<Transaction> findByDateBetween(LocalDateTime start, LocalDateTime end){
 		return transactionRepository.findByDateBetween(start, end);
+	}
+	public List<Transaction> findByDateBetweenForUser(LocalDateTime start, LocalDateTime end, String username){
+		//System.out.println(transactionRepository.findByUserUsernameAndDateBetween(username, start, end));
+		return transactionRepository.findByUserUsernameAndDateBetween(username, start, end);
 	}
 }

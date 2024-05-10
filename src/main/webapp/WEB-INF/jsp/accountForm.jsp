@@ -142,12 +142,12 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
                 <sec:authorize access="hasAuthority('Admin')">
-                    <li class="nav-item"><a class="nav-link" href="/account/">Account Form</a></li>
                     <li class="nav-item"><a class="nav-link" href="/branch/">Branch Form</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/customer/">Customer Form</a></li>
                     <li class="nav-item"><a class="nav-link" href="/role/">Role Form</a></li>
                 </sec:authorize>
                 <sec:authorize access="isAuthenticated">
+                <li class="nav-item"><a class="nav-link" href="/account/">Account Form</a></li>
+                <li class="nav-item"><a class="nav-link" href="/customer/">Customer Form</a></li>
                     <li class="nav-item"><a class="nav-link" href="/user/">User Form</a></li>
                     <li class="nav-item"><a class="nav-link" href="/transaction/">Transaction Form</a></li>
                 </sec:authorize>
@@ -269,8 +269,9 @@
                     <td>${acc.getCustomer().getName()}</td>
                     <td>
                         <a href="updateAccount?id=${acc.getId()}">Update</a>
-                        |
-                        <a href="deleteAccount?id=${acc.getId()}">Delete</a>
+                        <sec:authorize access="hasAuthority('Admin')">
+                        |<a href="deleteAccount?id=${acc.getId()}">Delete</a>
+                    	</sec:authorize>
                     </td>
                 </tr>
             </c:forEach>

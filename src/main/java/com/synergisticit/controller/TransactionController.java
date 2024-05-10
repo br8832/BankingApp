@@ -58,33 +58,43 @@ public class TransactionController {
         return accountService.findAll();
     }
 
-    @ModelAttribute("yourTransactions")
+    @ModelAttribute("transactions")
     public List<Transaction> getYourTransactions(Principal principal) {
+    	Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    	if (authentication != null && authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("Admin"))) {
+    		return transactionService.findAll();
+    	}
+    	// else it's only your user transactions
         List<Transaction> yourTransactions = new ArrayList<>();
         for (Account a : accountService.findByUsername(principal.getName())) {
             yourTransactions.addAll(transactionService.findByAccountId(a.getId()));
         }
         return yourTransactions;
     }
-
+    @ModelAttribute("fromAccounts")
+    public List<Account> getYourAccounts(Principal principal){
+    	Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    	if (authentication != null && authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("Admin"))) {
+    		return accountService.findAll();
+    	}
+    	return accountService.findByUsername(principal.getName());
+    }
+    
     @RequestMapping({ "/form", "/" })
     public String transactionForm(Transaction transaction, Model model, Principal principal) {
     	model.addAttribute("ops", CRUDMethods);
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("Admin"))) {
-            model.addAttribute("transactions", transactionService.findAll());
-        } else {
-            model.addAttribute("transactions", model.getAttribute("yourTransactions"));
-        }
         return "transactionForm";
     }
 
     @RequestMapping("/saveTransaction")
     public String save(@ModelAttribute Transaction transaction, Model model, BindingResult br) {
         transactionValidator.validate(transaction, br);
+        System.out.println(model);
         if (br.hasErrors()) {
         	model.addAttribute("hasErrors",true);
+        	System.out.println(model);
             return "transactionForm";
         } else {
             transactionService.save(transaction);
@@ -96,15 +106,21 @@ public class TransactionController {
     public String update(Transaction transaction, Model model) {
         Transaction t = transactionService.findById(transaction.getId());
         model.addAttribute("t", t);
+        
         return "transactionForm";
     }
 
     @RequestMapping("/filterTransactions")
     public String filterTransactions(Transaction transaction, Model model,
-            @RequestParam("startDate") String start, @RequestParam("endDate") String end) {
+            @RequestParam("startDate") String start, @RequestParam("endDate") String end, Principal principal) {
         LocalDateTime startDate = LocalDateTime.parse(start + "T00:00:00");
         LocalDateTime endDate = LocalDateTime.parse(end + "T23:59:59");
-        List<Transaction> filteredTransactions = transactionService.findByDateBetween(startDate, endDate);
+        List<Transaction> filteredTransactions;
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    	if (authentication != null && authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("Admin"))) 
+    		filteredTransactions = transactionService.findByDateBetween(startDate, endDate);
+    	filteredTransactions = transactionService.findByDateBetweenForUser(startDate, endDate, principal.getName());
         model.addAttribute("transactions", filteredTransactions);
         model.addAttribute("startDate", LocalDate.parse(start));
         model.addAttribute("endDate", LocalDate.parse(end));
@@ -118,13 +134,15 @@ public class TransactionController {
     }
 
     @RequestMapping("/between")
-    public ResponseEntity<?> between(@RequestParam String start, @RequestParam String end) {
-        try {
+    public ResponseEntity<?> between(Principal principal,@RequestParam String start, @RequestParam String end) {
+    	
+    	try {
             return ResponseEntity.ok(transactionService.findByDateBetween(
                     LocalDateTime.parse(start + "T00:00:00"), LocalDateTime.parse(end + "T23:59:59")));
         } catch (DateTimeParseException dt) {
             return ResponseEntity.badRequest().body(dt);
         }
+    	
     }
 }
 

@@ -43,8 +43,16 @@ public class AccountController {
 		return customerService.findAll();
 	}
 	@ModelAttribute("accounts")
-	public List<Account> getAccounts(){
-		return accountService.findAll();
+	public List<Account> getAccounts(Principal principal){
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication != null && authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("Admin"))) 
+        	return accountService.findAll();
+		else {
+			 List<Account> userAccounts = accountService.findByUsername(principal.getName());
+	         return userAccounts != null ? userAccounts : Collections.emptyList();
+		}
+
 	}
 	@ModelAttribute("branches")
 	public List<Branch> getBranches(){
@@ -61,17 +69,14 @@ public class AccountController {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("Admin"))) {
-        	model.addAttribute("accounts", accountService.findAll());
+       
         } else {
-        	System.out.println(principal);
-        	 List<Account> userAccounts = accountService.findByUsername(principal.getName());
-             model.addAttribute("accounts", userAccounts != null ? userAccounts : Collections.emptyList());
-             try {
-             model.addAttribute("defaultCustomerId", userService.findByUsername(principal.getName()).getId());
-             }
-             catch(Exception e) {
-            	 return "accessDenied";
-             }
+	    	try {
+	    	 model.addAttribute("defaultCustomerId", userService.findByUsername(principal.getName()).getId());
+	         }
+	         catch(Exception e) {
+	        	 return "home";
+	         }
              
         }
 

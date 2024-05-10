@@ -88,12 +88,12 @@ ul:before{
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <sec:authorize access="hasAuthority('Admin')">
-                        <li class="nav-item"><a class="nav-link" href="/account/">Account Form</a></li>
                         <li class="nav-item"><a class="nav-link" href="/branch/">Branch Form</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/customer/">Customer Form</a></li>
                         <li class="nav-item"><a class="nav-link" href="/role/">Role Form</a></li>
                     </sec:authorize>
                     <sec:authorize access="isAuthenticated">
+                    	<li class="nav-item"><a class="nav-link" href="/account/">Account Form</a></li>
+                   		<li class="nav-item"><a class="nav-link" href="/customer/">Customer Form</a></li>
                         <li class="nav-item"><a class="nav-link" href="/user/">User Form</a></li>
                         <li class="nav-item"><a class="nav-link" href="/transaction/">Transaction Form</a></li>
                     </sec:authorize>
@@ -146,17 +146,17 @@ ul:before{
             <f:errors path="id" cssClass="error-message" />
         </div>
 		
-		<div id="fromAccountDiv" style="display:none" class="mb-3">
+		<div id="fromAccountDiv" style="display:${not empty transaction  && transaction.getType()=='WITHDRAW' || transaction.getType()=='TRANSFER'? 'block' : 'none'}" class="mb-3">
             <label for="fromAccount" class="form-label">From Account</label>
             <f:select path="fromAccount" class="form-select">
-                <c:forEach items="${accounts}" var="a">
+                <c:forEach items="${fromAccounts}" var="a">
                     <f:option selected="${a.getId().equals(t.getFromAccount())}" value="${a.getId()}">${a.identifier()}</f:option>
                 </c:forEach>
             </f:select>
             <f:errors path="fromAccount" cssClass="error-message" />
         </div>
         
-        <div id="toAccountDiv" style="display:none" class="mb-3">
+        <div id="toAccountDiv" style="display:${not empty transaction && ransaction.getType()=='DEPOSIT' || transaction.getType()=='TRANSFER' ? 'block' : 'none'}" class="mb-3">
             <label for="toAccount" class="form-label">To Account</label>
             <f:select path="toAccount" class="form-select">
                 <c:forEach items="${accounts}" var="a">
@@ -244,9 +244,13 @@ ul:before{
                     <tr>
                         <td>${t.getId()}</td>
                         <c:set var="from" value="${accounts.stream().filter(a -> a.id == t.fromAccount).findFirst().orElse(null)}" />
-                         <td>${from != null ? from.identifier() : ''}</td>
+    					<td>
+    					<c:if test="${from != null}">
+    					${from.identifier()} ${String.valueOf(from.getBalance())} 
+    					</c:if>
+    					</td>
                         <c:set var="to" value="${accounts.stream().filter(a -> a.id == t.toAccount).findFirst().orElse(null)}" />
-                         <td>${to != null ? to.identifier() : ''}</td>
+                         	<td>${to != null ? to.identifier() : ''}</td>
                         <td>${t.getAmount()}</td>
                         <td>${t.getType()}</td>
                         <td>${t.getDate()}</td>

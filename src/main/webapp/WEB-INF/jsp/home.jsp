@@ -84,10 +84,11 @@
                 <sec:authorize access="hasAuthority('Admin')">
                     <li class="nav-item"><a class="nav-link" href="/account/">Account Form</a></li>
                     <li class="nav-item"><a class="nav-link" href="/branch/">Branch Form</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/customer/">Customer Form</a></li>
+               
                     <li class="nav-item"><a class="nav-link" href="/role/">Role Form</a></li>
                 </sec:authorize>
                 <sec:authorize access="isAuthenticated">
+                <li class="nav-item"><a class="nav-link" href="/customer/">Customer Form</a></li>
                     <li class="nav-item"><a class="nav-link" href="/user/">User Form</a></li>
                     <li class="nav-item"><a class="nav-link" href="/transaction/">Transaction Form</a></li>
                 </sec:authorize>

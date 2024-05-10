@@ -1,4 +1,4 @@
- package com.synergisticit.domain;
+package com.synergisticit.domain;
 
 import java.util.ArrayList;
 import java.util.List;

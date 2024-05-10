@@ -32,10 +32,12 @@ public class TransactionValidator implements Validator {
 		case WITHDRAW:
 			if(t.getFromAccount()==null) errors.rejectValue("fromAccount","fromAccount.empty","Choose fromAccount");
 			else if(accountService.findById(t.getFromAccount()).getBalance() < t.getAmount())
-				errors.rejectValue("amount", "amount.negative","This amount puts you in the negatives");
+				errors.rejectValue("amount", "amount.negative","You don't have "+String.format("$%.2f", t.getAmount())+"$ in your account");
 			break;
 		case TRANSFER:
 			if(t.getFromAccount()==null) errors.rejectValue("fromAccount","fromAccount.empty","Choose fromAccount");
+			else if(accountService.findById(t.getFromAccount()).getBalance() < t.getAmount())
+				errors.rejectValue("amount", "amount.negative","You don't have "+String.format("$%.2f", t.getAmount())+"$ in your account");
 			if(t.getToAccount()==null) errors.rejectValue("toAccount","toAccount.empty","Choose toAccount");
 			break;
 		case DEPOSIT:

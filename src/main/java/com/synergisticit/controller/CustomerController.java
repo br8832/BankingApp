@@ -1,8 +1,11 @@
 package com.synergisticit.controller;
 
+import java.security.Principal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -26,23 +29,45 @@ public class CustomerController {
 	
 	static List<String> CRUDMethods = List.of("CREATE","UPDATE","DELETE");
 	
-	@ModelAttribute("customers")
-	public List<Customer> getCustomers(){
-		return customerService.findAll();
-	}
-	@ModelAttribute("users")
-	public List<User> getUsers(){
-		return customerService.availableUsers();
-	}
+//	@ModelAttribute("customers")
+//	public List<Customer> getCustomers(){
+//		return customerService.findAll();
+//	}
+//	@ModelAttribute("users")
+//	public List<User> getUsers(){
+//		return customerService.availableUsers();
+//	}
 	@ModelAttribute("genders")
 	public Gender[] genders(){
 		return Gender.values();
 	}
+	@ModelAttribute("customers")
+	public List<Customer> getCustomers(Principal principal){
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("Admin"))) 
+        	return customerService.findAll();
+        else 
+        	return customerService.findByUserUsername(principal.getName());
+	}
+	@ModelAttribute("users")
+	public List<User> getUsers(Principal principal){
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("Admin"))) 
+        	return customerService.availableUsers();
+        else 
+        	return customerService.findUserInCustomer(principal.getName());
+	}
 	
 	@RequestMapping({"/form","/"})
-	public String customerForm(Customer customer, Model m) {
-		m.addAttribute("nextId", customerService.getNextId());
-		m.addAttribute("ops", CRUDMethods);
+	public String customerForm(Customer customer, Model model,Principal principal) {
+		model.addAttribute("nextId", customerService.getNextId());
+		model.addAttribute("ops", CRUDMethods);
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getAuthorities().stream()
+                .noneMatch(a -> a.getAuthority().equals("Admin"))) 
+        	model.addAttribute("c", customerService.findByUserUsername(principal.getName()).get(0));
 		//m.addAttribute("genders", Gender.values());
 		//m.addAttribute("customers", customerService.findAll());
 		//m.addAttribute("users", userService.findAll());

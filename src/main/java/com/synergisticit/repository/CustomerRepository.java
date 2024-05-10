@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.synergisticit.domain.Customer;
 import com.synergisticit.domain.User;
@@ -15,7 +16,8 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     boolean existsByUserUsername(String username);
 	@Query("SELECT u FROM User u WHERE NOT EXISTS (SELECT c FROM Customer c WHERE c.user = u)")
     List<User> findUsersNotAssociatedWithCustomer();
-	@Query(value = "SELECT u From User u WHERE u.username = :username")
-	User findByUserUsername(String username);
+	@Query("SELECT u FROM User u WHERE u.username IN (SELECT c.user.username from Customer c where c.user.username=:username)")
+	User findUserInCustomer(@Param("username") String username);
+	Customer findByUserUsername(String username);
 	
 }

@@ -88,12 +88,13 @@ ul:before{
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
                 <sec:authorize access="hasAuthority('Admin')">
-                    <li class="nav-item"><a class="nav-link" href="/account/">Account Form</a></li>
+                   
                     <li class="nav-item"><a class="nav-link" href="/branch/">Branch Form</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/customer/">Customer Form</a></li>
                     <li class="nav-item"><a class="nav-link" href="/role/">Role Form</a></li>
                 </sec:authorize>
                 <sec:authorize access="isAuthenticated">
+                <li class="nav-item"><a class="nav-link" href="/account/">Account Form</a></li>
+                <li class="nav-item"><a class="nav-link" href="/customer/">Customer Form</a></li>
                     <li class="nav-item"><a class="nav-link" href="/user/">User Form</a></li>
                     <li class="nav-item"><a class="nav-link" href="/transaction/">Transaction Form</a></li>
                 </sec:authorize>
@@ -217,7 +218,7 @@ ul:before{
             <tr>
                 <td>Id</td><td>Name</td><td>Gender</td>
                 <td>DOB</td><td>Mobile</td><td>Address</td>
-                <td>SSN</td><td>Action</td><td>Account</td>
+                <td>SSN</td><td>Action</td>
             </tr>
             <c:forEach items="${customers}" var="cust">
                 <tr>
@@ -229,9 +230,12 @@ ul:before{
                     <td class="address-line">${cust.getAddress().readable()}</td>
                     <td>${cust.getSSN()}</td>
                     <td>
-                        <a href="updateCustomer?id=${cust.getId()}">Update</a>|
-                        <a href="deleteCustomer?id=${cust.getId()}">Delete</a>
+                        <a href="updateCustomer?id=${cust.getId()}">Update</a>
+                        <sec:authorize access="hasAuthority('Admin')">
+                        |<a href="deleteCustomer?id=${cust.getId()}">Delete</a>
+                        </sec:authorize>
                     </td>
+                    <td>
                 </tr>
             </c:forEach>
         </table>

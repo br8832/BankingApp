@@ -41,11 +41,12 @@ public class CustomerValidator implements Validator{
 	public void validate(Object target, Errors errors) {
 		// TODO Auto-generated method stub
 		Customer c = (Customer)target;
+		
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors,"name","name.empty", "Name must not be empty");
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors,"mobile","mobile.empty", "Mobile must not be empty");
 		if(c.getUser()==null)
 			errors.rejectValue("user","user.empty","Choose one User");
-		else if(customerService.existsAlready(c.getUser().getUsername()))
+		else if(customerService.existsAlready(c.getUser().getUsername()) && c.getId()==customerService.getNextId())
 			errors.rejectValue("user", "user.exists", "Por listo chava");
 		if(c.getGender()==null)
 			errors.rejectValue("gender","gender.empty","Choose one");

@@ -5,6 +5,7 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -13,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 
 
 @Configuration
@@ -24,7 +26,12 @@ public class SecurityConfig{
 	@Autowired UserDetailsService userDetailsService ;
     @Autowired AccessDeniedHandler accessDeniedHandler;
     @Autowired AuthenticationSuccessHandler authenticationSuccessHandler;
-	
+//    @Primary
+//    @Bean
+//    public SavedRequestAwareAuthenticationSuccessHandler savedRequestAwareAuthenticationSuccessHandler() {
+//        return new SavedRequestAwareAuthenticationSuccessHandler();
+//    }
+    
 	@Bean
 	DaoAuthenticationProvider authProvider() {
 		DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -33,20 +40,17 @@ public class SecurityConfig{
 		return authProvider;
 	}
 	
+	@SuppressWarnings("deprecation")
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
-	        http.csrf().disable()
-	            .authorizeRequests()
-	            	.requestMatchers("/branch/**","/role/**").hasAnyAuthority("Admin")
-	                .requestMatchers("/WEB-INF/jsp/**","/", "/login","/transaction/**","/customer/**","/account/**").permitAll()
-	                .requestMatchers("/static/**","/resources/**","/mp3/**","/images/**", "/css/**").permitAll()
-	                .anyRequest().authenticated()
-	                .and()
-	            .formLogin()
-	                .successHandler(authenticationSuccessHandler)
-	                .and()
-	            .exceptionHandling()
-	                .accessDeniedHandler(accessDeniedHandler);
+	        http.csrf(csrf->csrf.disable())
+	            .authorizeRequests(requests->requests
+	            		.requestMatchers("/branch/**","/role/**").hasAnyAuthority("Admin")
+	            		.requestMatchers("/WEB-INF/jsp/**","/", "/login","/transaction/**","/customer/**","/account/**").permitAll()
+		                .requestMatchers("/static/**","/resources/**","/mp3/**","/images/**", "/css/**").permitAll()
+		                .anyRequest().authenticated())
+	            .formLogin(login->login.successHandler(authenticationSuccessHandler))
+	            .exceptionHandling(error->error.accessDeniedHandler(accessDeniedHandler));
 	        return http.build();
 	    }
 	@Bean
