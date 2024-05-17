@@ -111,6 +111,59 @@
                 </ul>
             </c:if>
 <br>
+ <h1 class="text-center">Lista de Sucursales</h1>
+    <c:if test="${not empty sucursales}">
+        <div class="mb-3">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th><a href="findAll?sortBy=id">Id</a></th>
+                        <th><a href="findAll?sortBy=name">Nombre</a></th>
+                        <th>Dirección</th>
+                        <th>Cuentas</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <c:forEach items="${sucursales}" var="s">
+                        <tr>
+                            <td>${s.getId()}</td>
+                            <td>${s.getName()}</td>
+                            <td>${s.getAddress()}</td>
+                            <td>${s.getAccounts()}</td>
+                            <td>
+                                <a href="updateBranch?id=${s.getId()}">Actualizar</a> |
+                                <a href="deleteBranch?id=${s.getId()}">Eliminar</a>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                </tbody>
+            </table>
+        </div>
+         <c:set var="totalPages" value="${totalPages}"></c:set>
+	<c:set var="sortedBy" value="${sortedBy}"></c:set>
+	<c:set var="pageSize" value="${pageSize}"></c:set>
+	
+	<p>"${totalPages}" "${sortedBy}" "${pageSize}" </p>
+	<div class="text-center form-heading">
+	<%
+	try{
+		
+	for(int i=0; i< (int)pageContext.getAttribute("totalPages"); i++){
+		out.println("<a href=\"form?pageNo="+i
+		+"&pageSize="+pageContext.getAttribute("pageSize")
+		+"&sortedBy="+pageContext.getAttribute("sortedBy")
+		+"\">"
+		+i
+		+"</a>");
+	}
+	}
+	catch(NullPointerException np){
+		System.err.println(np);
+	}
+	%>
+	</div>
+    </c:if>
     <h1 class="text-center">Formulario de Sucursal</h1>
     <br>Contexto: <%= request.getContextPath() %>
     <f:form action="saveBranch" method="POST" modelAttribute="branch">
@@ -186,8 +239,8 @@
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th>Id</th>
-                        <th>Nombre</th>
+                        <th><a href="findAll?sortBy=id">Id</a></th>
+                        <th><a href="findAll?sortBy=name">Nombre</a></th>
                         <th>Dirección</th>
                         <th>Cuentas</th>
                         <th>Acción</th>

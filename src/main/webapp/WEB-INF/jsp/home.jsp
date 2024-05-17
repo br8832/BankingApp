@@ -84,12 +84,13 @@
                 <sec:authorize access="hasAuthority('Admin')">
                     <li class="nav-item"><a class="nav-link" href="/account/">Account Form</a></li>
                     <li class="nav-item"><a class="nav-link" href="/branch/">Branch Form</a></li>
-               
+      
                     <li class="nav-item"><a class="nav-link" href="/role/">Role Form</a></li>
                 </sec:authorize>
                 <sec:authorize access="isAuthenticated">
+                <li class="nav-item"><a class="nav-link" href="/pagedUser?pageNo=0&pageSize=5&sortedBy=username">Paged</a></li>
                 <li class="nav-item"><a class="nav-link" href="/customer/">Customer Form</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/user/">User Form</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/user/?pageNo=0">User Form</a></li>
                     <li class="nav-item"><a class="nav-link" href="/transaction/">Transaction Form</a></li>
                 </sec:authorize>
                 <li class="nav-item"><a class="nav-link" href="home">Home</a></li>
@@ -114,15 +115,15 @@
             </sec:authorize>
         </p>
     </div>
-    <audio id="background-audio" loop controls preload="auto" style="display: none;">
+    <%-- <audio id="background-audio" loop controls preload="auto" style="display: none;">
         <source type="audio/mpeg" src="<c:url value="/mp3/OG's, ESTAFA PIRAMIDAL.mp3" />">
-    </audio>
+    </audio> --%>
    
 </div>
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-<script>
+<!-- <script>
     $(document).ready(function() {
     	var audio = document.getElementById("background-audio");
         audio.play();    
@@ -130,7 +131,7 @@
         	audio.style.display="block";
         },15000)
     });
-</script>
+</script>  -->
 </body>
 </html>
    

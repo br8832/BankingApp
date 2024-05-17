@@ -88,10 +88,12 @@ ul:before{
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <sec:authorize access="hasAuthority('Admin')">
+                    
                         <li class="nav-item"><a class="nav-link" href="/branch/">Branch Form</a></li>
                         <li class="nav-item"><a class="nav-link" href="/role/">Role Form</a></li>
                     </sec:authorize>
                     <sec:authorize access="isAuthenticated">
+                        <li class="nav-item"><a class="nav-link" href="pagedUser?pageNo=1&pageSize=5&sortedBy=username">Paged-User Form</a></li>
                     	<li class="nav-item"><a class="nav-link" href="/account/">Account Form</a></li>
                    		<li class="nav-item"><a class="nav-link" href="/customer/">Customer Form</a></li>
                         <li class="nav-item"><a class="nav-link" href="/user/">User Form</a></li>
@@ -142,7 +144,7 @@ ul:before{
     <f:form action="saveTransaction" method="POST" modelAttribute="transaction">
         <div class="mb-3">
             <label for="id" class="form-label">ID</label>
-            <f:input type="text" readonly="true" class="form-control" id="id" path="id" value="${nextId}" />
+            <f:input type="text" readonly="true" class="form-control" id="id" path="id" value="${transaction.getId() != null ? t.getId() : nextId }" />
             <f:errors path="id" cssClass="error-message" />
         </div>
 		
@@ -156,7 +158,7 @@ ul:before{
             <f:errors path="fromAccount" cssClass="error-message" />
         </div>
         
-        <div id="toAccountDiv" style="display:${not empty transaction && ransaction.getType()=='DEPOSIT' || transaction.getType()=='TRANSFER' ? 'block' : 'none'}" class="mb-3">
+        <div id="toAccountDiv" style="display:${not empty transaction && transaction.getType()=='DEPOSIT' || transaction.getType()=='TRANSFER' ? 'block' : 'none'}" class="mb-3">
             <label for="toAccount" class="form-label">To Account</label>
             <f:select path="toAccount" class="form-select">
                 <c:forEach items="${accounts}" var="a">
@@ -229,12 +231,12 @@ ul:before{
         <table class="table mt-3">
             <thead>
                 <tr>
-                    <th>ID</th>
+                    <th><a href="findAll?sortBy=id">ID</a></th>
                     <th>From Account</th>
                     <th>To Account</th>
-                    <th>Amount</th>
+                    <th><a href="findAll?sortBy=amount">Amount</a></th>
                     <th>Transaction Type</th>
-                    <th>Date</th>
+                    <th><a href="findAll?sortBy=date">Date</a></th>
                     <th>Comments</th>
                     <sec:authorize access="hasAuthority('Admin')"><th>Action</th></sec:authorize>
                 </tr>
@@ -265,6 +267,29 @@ ul:before{
                 </c:forEach>
             </tbody>
         </table>
+          <c:set var="totalPages" value="${totalPages}"></c:set>
+	<c:set var="sortedBy" value="${sortedBy}"></c:set>
+	<c:set var="pageSize" value="${pageSize}"></c:set>
+	
+	<p>"${totalPages}" "${sortedBy}" "${pageSize}" </p>
+	<div class="text-center form-heading">
+	<%
+	try{
+		
+	for(int i=0; i< (int)pageContext.getAttribute("totalPages"); i++){
+		out.println("<a href=\"form?pageNo="+i
+		+"&pageSize="+pageContext.getAttribute("pageSize")
+		+"&sortedBy="+pageContext.getAttribute("sortedBy")
+		+"\">"
+		+i
+		+"</a>");
+	}
+	}
+	catch(NullPointerException np){
+		System.err.println(np);
+	}
+	%>
+	</div>
     </c:if>
 </div>
 </body>

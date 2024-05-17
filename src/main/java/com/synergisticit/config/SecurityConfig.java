@@ -21,16 +21,10 @@ import org.springframework.security.web.authentication.SavedRequestAwareAuthenti
 @EnableMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class SecurityConfig{
 	@Autowired DataSource dataSource;
-	
-//	@Autowired BCryptPasswordEncoder bCrypt;
 	@Autowired UserDetailsService userDetailsService ;
     @Autowired AccessDeniedHandler accessDeniedHandler;
     @Autowired AuthenticationSuccessHandler authenticationSuccessHandler;
-//    @Primary
-//    @Bean
-//    public SavedRequestAwareAuthenticationSuccessHandler savedRequestAwareAuthenticationSuccessHandler() {
-//        return new SavedRequestAwareAuthenticationSuccessHandler();
-//    }
+
     
 	@Bean
 	DaoAuthenticationProvider authProvider() {

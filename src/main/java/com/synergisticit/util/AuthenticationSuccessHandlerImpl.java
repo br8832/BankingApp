@@ -22,7 +22,7 @@ public class AuthenticationSuccessHandlerImpl implements AuthenticationSuccessHa
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
             Authentication authentication) throws IOException, ServletException {
-        savedRequestAwareAuthenticationSuccessHandler.setDefaultTargetUrl(request.getRequestURI());
+        //savedRequestAwareAuthenticationSuccessHandler.setDefaultTargetUrl(request.getRequestURI());
         //savedRequestAwareAuthenticationSuccessHandler.setAlwaysUseDefaultTargetUrl(true);
         savedRequestAwareAuthenticationSuccessHandler.onAuthenticationSuccess(request, response, authentication);
     }

@@ -1,0 +1,116 @@
+<%-- <div class="grid-container">
+        <!-- Left column: User List -->
+        <div class="grid-item">
+    <h1 class="text-center list-heading">List of Users</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th><a href="findAll?sortBy=id">User id</a></th> 
+				<th><a href="findAll?sortBy=username">Name</a></th> 
+				<th><a href="findAll?sortBy=password">Password</a></th> 
+				<th><a href="findAll?sortBy=email">Email</a></th> 
+                <th>Roles</th>
+                <sec:authorize access="hasAuthority('Admin')"><th>Action</th></sec:authorize>
+            </tr>
+        </thead>
+        <tbody>
+            <c:forEach items="${users}" var="user">
+                <tr>
+                    <td>${user.getId()}</td>
+                    <td>${user.getUsername()}</td>
+                    <td>${user.getPassword()}</td>
+                    <td>${user.getEmail()}</td>
+                    <td>
+                        <c:forEach items="${user.getRoles()}" var="role">
+                            ${role.getName()}
+                        </c:forEach>
+                    </td>
+                    <sec:authorize access="isAuthenticated">
+                    <td class="action-links">
+                    	<sec:authorize access="hasAuthority('Admin')">
+                        <a href="deleteUser?id=${user.getId()}">Delete</a>
+                        </sec:authorize>
+                        <a href="updateUser?id=${user.getId()}&sortedBy=${sortedBy}">Update</a>
+                    </td>
+                    </sec:authorize>
+                </tr>
+            </c:forEach>
+        </tbody>
+    </table>
+<c:set var="totalPages" value="${totalPages}"></c:set>
+<c:set var="sortedBy" value="${sortedBy}"></c:set>
+<c:set var="pageSize" value="${pageSize}"></c:set>
+
+<p>"${totalPages}" "${sortedBy}" "${pageSize}" </p>
+<div class="text-center form-heading">
+<%
+try{
+	
+for(int i=0; i< (int)pageContext.getAttribute("totalPages"); i++){
+	out.println("<a href=\"form?pageNo="+i
+	+"&pageSize="+pageContext.getAttribute("pageSize")
+	+"&sortedBy="+pageContext.getAttribute("sortedBy")
+	+"\">"
+	+i
+	+"</a>");
+}
+}
+catch(NullPointerException np){
+	System.err.println(np);
+}
+%>
+</div>
+     
+        </div>
+        <!-- Right column: Form -->
+        <div class="grid-item">
+            <h1 class="text-center form-heading">User Form</h1>
+            <f:form action="saveUser" modelAttribute="user">
+                <c:if test="${not empty ops}">
+                <ul aria-label="OPERACIONES:">
+                    <c:forEach items="${ops}" var="op">
+                        <li>${op}</li>
+                    </c:forEach>
+                </ul>
+            </c:if>
+    <f:form action="saveUser" modelAttribute="user">
+        <table class="table">
+            <tr>
+                <td><label for="id" class="form-label">User Id:</label></td>
+                <td><f:input path="id" readonly="true" value="${nextId}" class="form-control"/></td>
+                <td><f:errors path="id" cssStyle="color:purple;"></f:errors></td>
+            </tr>
+            <tr>
+                <td><label for="username" class="form-label">Name:</label></td>
+                <td><f:input path="username" value="${u.getUsername()}" class="form-control"/></td>
+                <td><f:errors path="username" cssStyle="color:purple;"></f:errors></td>
+            </tr>
+            <tr>
+                <td><label for="password" class="form-label">Password:</label></td>
+                <td><f:input path="password" value="${u.getPassword()}" class="form-control"/></td>
+                <td><f:errors path="password" cssStyle="color:purple;"></f:errors></td>
+            </tr>
+            <tr>
+                <td><label for="email" class="form-label">Email:</label></td>
+                <td><f:input path="email" value="${u.getEmail()}" class="form-control"/></td>
+                <td><f:errors path="email" cssStyle="color:purple;"></f:errors></td>
+            </tr>
+            <tr>
+                <td><label class="form-label">Roles:</label></td>
+                <td>
+                    <c:forEach items="${roles}" var="role">
+                        <f:checkbox checked="${u.getRoles().contains(role)?'checked':null}" path="roles" label="${role.getName()}" value="${role.getId()}" class="form-check-input"/>
+                    </c:forEach>
+                </td>
+                <td><f:errors path="roles" cssStyle="color:purple;"></f:errors></td>
+            </tr>
+            <tr>
+                <td colspan="3" align="center"><input type="submit" value="Submit" class="form-submit-btn"/></td>
+            </tr>
+        </table>
+    </f:form>
+
+            </f:form>
+        </div>
+    </div>
+ --%>

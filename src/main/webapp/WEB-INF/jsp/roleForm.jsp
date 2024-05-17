@@ -151,8 +151,8 @@
 
             <table border="1">
                 <tr>
-                    <th>Role Id</th>
-                    <th>Role Name</th>
+                    <th><a href="findAll?sortBy=id">Role Id</a></th>
+                    <th><a href="findAll?sortBy=name">Role Name</a></th>
                     <th>Action</th>
                 </tr>
 
@@ -169,6 +169,29 @@
                     </tr>
                 </c:forEach>
             </table>
+    <c:set var="totalPages" value="${totalPages}"></c:set>
+	<c:set var="sortedBy" value="${sortedBy}"></c:set>
+	<c:set var="pageSize" value="${pageSize}"></c:set>
+	
+	<p>"${totalPages}" "${sortedBy}" "${pageSize}" </p>
+	<div class="text-center form-heading">
+	<%
+	try{
+		
+	for(int i=0; i< (int)pageContext.getAttribute("totalPages"); i++){
+		out.println("<a href=\"form?pageNo="+i
+		+"&pageSize="+pageContext.getAttribute("pageSize")
+		+"&sortedBy="+pageContext.getAttribute("sortedBy")
+		+"\">"
+		+i
+		+"</a>");
+	}
+	}
+	catch(NullPointerException np){
+		System.err.println(np);
+	}
+	%>
+	</div>
         </div>
 
         <div class="role-form">

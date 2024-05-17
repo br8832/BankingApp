@@ -146,6 +146,7 @@
                     <li class="nav-item"><a class="nav-link" href="/role/">Role Form</a></li>
                 </sec:authorize>
                 <sec:authorize access="isAuthenticated">
+                <li class="nav-item"><a class="nav-link" href="pagedUser?pageNo=1&pageSize=5&sortedBy=username">Paged-User Form</a></li>
                 <li class="nav-item"><a class="nav-link" href="/account/">Account Form</a></li>
                 <li class="nav-item"><a class="nav-link" href="/customer/">Customer Form</a></li>
                     <li class="nav-item"><a class="nav-link" href="/user/">User Form</a></li>
@@ -187,7 +188,7 @@
     <div>
         <c:forEach items="${branches}" var="branch">
         <f:radiobutton path="branch"  label="${branch.getName()}" value="${branch.getId()}" 
-        checked="${acc.getBranch().getId().equals(branch.getId()) ? 'checked' : ''}" />
+        checked="${acc.getBranch().getId().equals(branch.getId()) || account.getBranch().getId().equals(branch.getId())? 'checked' : ''}" />
         </c:forEach>
         <f:errors path="branch" cssClass="error"/>
     </div>
@@ -223,7 +224,7 @@
             <f:input type="text" class="form-control" path="balance" value="${acc.getBalance()}" />
             <f:errors path="balance" cssClass="error" />
         </div>
-
+<div class="form-group">
        <label class="form-label">Customer:</label>
        
 <c:choose>
@@ -235,11 +236,12 @@
     </c:when>
     <c:otherwise>
         <f:radiobutton path="customer" label="${pageContext.request.userPrincipal.name}" 
-            value="${defaultCustomerId}" disabled="true" checked="true" />
+            value="${defaultCustomerId}" checked="true" />
     </c:otherwise>
 </c:choose>
+<f:errors path="customer" cssClass="error" />
 
-
+</div>
         <div class="form-group" align="center">
             <input type="submit" class="btn-primary" value="Submit" />
         </div>
@@ -249,12 +251,12 @@
     <c:if test="${not empty accounts}">
         <table>
             <tr>
-                <th>Id</th>
+                <th><a href="findAll?sortBy=id">Id</a></th>
                 <th>Branch</th>
-                <th>Account Type</th>
-                <th>Holder</th>
-                <th>Date Opened</th>
-                <th>Balance</th>
+                <th><a href="findAll?sortBy=accountType">Account Type</a></th>
+                <th><a href="findAll?sortBy=holder">Holder</a></th>
+                <th><a href="findAll?sortBy=dateOpened">Date Opened</a></th>
+                <th><a href="findAll?sortBy=balance">Balance</a></th>
                 <th>Customer</th>
                 <th>Action</th>
             </tr>
@@ -276,6 +278,29 @@
                 </tr>
             </c:forEach>
         </table>
+        <c:set var="totalPages" value="${totalPages}"></c:set>
+	<c:set var="sortedBy" value="${sortedBy}"></c:set>
+	<c:set var="pageSize" value="${pageSize}"></c:set>
+	
+	<p>"${totalPages}" "${sortedBy}" "${pageSize}" </p>
+	<div class="text-center form-heading">
+	<%
+	try{
+		
+	for(int i=0; i< (int)pageContext.getAttribute("totalPages"); i++){
+		out.println("<a href=\"form?pageNo="+i
+		+"&pageSize="+pageContext.getAttribute("pageSize")
+		+"&sortedBy="+pageContext.getAttribute("sortedBy")
+		+"\">"
+		+i
+		+"</a>");
+	}
+	}
+	catch(NullPointerException np){
+		System.err.println(np);
+	}
+	%>
+	</div>
     </c:if>
 </div>
 </body>

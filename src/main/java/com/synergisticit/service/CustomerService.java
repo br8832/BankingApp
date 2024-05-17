@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.synergisticit.domain.Customer;
@@ -55,5 +58,14 @@ public class CustomerService {
 	}
 	public List<User> findUserInCustomer(String name) {
 		return new ArrayList<User>(List.of(customerRepository.findUserInCustomer(name)));
+	}
+	public List<Customer> findAll(String sortBy) {
+        return customerRepository.findAll(Sort.by(sortBy));
+    }
+    public Page<Customer> findAll(Pageable page) {
+        return customerRepository.findAll(page);
+    }
+	public long getRecordCount() {
+		return customerRepository.count();
 	}
 }

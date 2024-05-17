@@ -120,13 +120,65 @@ ul:before{
                 </ul>
             </c:if>
 <br>
+<h1 class="text-center">List of Customers</h1>
+    <c:if test="${not empty customers}">
+        <table class="table">
+             <tr>
+                <td><a href="findAll?sortBy=id">Id</a></td><td><a href="findAll?sortBy=name">Name</a></td>
+                <td><a href="findAll?sortBy=gender">Gender</a></td><td><a href="findAll?sortBy=dob">DOB</a></td>
+                <td><a href="findAll?sortBy=id">Mobile</a></td><td>Address</td>
+                <td><a href="findAll?sortBy=SSN">SSN</a></td><td>Action</td>
+            </tr>
+            <c:forEach items="${customers}" var="cust">
+                <tr>
+                    <td>${cust.getId()}</td>
+                    <td>${cust.getName()}</td>
+                    <td>${cust.getGender()}</td>
+                    <td>${cust.getDob()}</td>
+                    <td>${cust.getMobile()}</td>
+                    <td class="address-line">${cust.getAddress().readable()}</td>
+                    <td>${cust.getSSN()}</td>
+                    <td>
+                        <a href="updateCustomer?id=${cust.getId()}">Update</a>
+                        <sec:authorize access="hasAuthority('Admin')">
+                        |<a href="deleteCustomer?id=${cust.getId()}">Delete</a>
+                        </sec:authorize>
+                    </td>
+                </tr>
+            </c:forEach>
+        </table>
+        <c:set var="totalPages" value="${totalPages}"></c:set>
+	<c:set var="sortedBy" value="${sortedBy}"></c:set>
+	<c:set var="pageSize" value="${pageSize}"></c:set>
+	
+	<p>"${totalPages}" "${sortedBy}" "${pageSize}" </p>
+	<div class="text-center form-heading">
+	<%
+	try{
+		
+	for(int i=0; i< (int)pageContext.getAttribute("totalPages"); i++){
+		out.println("<a href=\"form?pageNo="+i
+		+"&pageSize="+pageContext.getAttribute("pageSize")
+		+"&sortedBy="+pageContext.getAttribute("sortedBy")
+		+"\">"
+		+i
+		+"</a>");
+	}
+	}
+	catch(NullPointerException np){
+		System.err.println(np);
+	}
+	%>
+	</div>
+    </c:if>
+
     <h1 class="text-center">Customer Form</h1>
     <br>Context Path: <%= request.getContextPath() %>
     <f:form action="saveCustomer" modelAttribute="customer">
         <table class="table">
             <tr>
                 <td class="label">Customer ID</td>
-                <td><f:input type="text" class="form-control" readonly="true" path="id" value="${nextId}" /></td>
+                <td><f:input type="text" class="form-control" readonly="true" path="id" value="${c != null ? c.getId() : nextId}" /></td>
                 <td><f:errors path="id"  cssClass="error"></f:errors></td>
             </tr>
 
@@ -216,9 +268,10 @@ ul:before{
     <c:if test="${not empty customers}">
         <table class="table">
             <tr>
-                <td>Id</td><td>Name</td><td>Gender</td>
-                <td>DOB</td><td>Mobile</td><td>Address</td>
-                <td>SSN</td><td>Action</td>
+                <td><a href="findAll?sortBy=id">Id</a></td><td><a href="findAll?sortBy=name">Name</a></td>
+                <td><a href="findAll?sortBy=gender">Gender</a></td><td><a href="findAll?sortBy=dob">DOB</a></td>
+                <td><a href="findAll?sortBy=id">Mobile</a></td><td>Address</td>
+                <td><a href="findAll?sortBy=SSN">SSN</a></td><td>Action</td>
             </tr>
             <c:forEach items="${customers}" var="cust">
                 <tr>
@@ -235,10 +288,32 @@ ul:before{
                         |<a href="deleteCustomer?id=${cust.getId()}">Delete</a>
                         </sec:authorize>
                     </td>
-                    <td>
                 </tr>
             </c:forEach>
         </table>
+        <c:set var="totalPages" value="${totalPages}"></c:set>
+	<c:set var="sortedBy" value="${sortedBy}"></c:set>
+	<c:set var="pageSize" value="${pageSize}"></c:set>
+	
+	<p>"${totalPages}" "${sortedBy}" "${pageSize}" </p>
+	<div class="text-center form-heading">
+	<%
+	try{
+		
+	for(int i=0; i< (int)pageContext.getAttribute("totalPages"); i++){
+		out.println("<a href=\"form?pageNo="+i
+		+"&pageSize="+pageContext.getAttribute("pageSize")
+		+"&sortedBy="+pageContext.getAttribute("sortedBy")
+		+"\">"
+		+i
+		+"</a>");
+	}
+	}
+	catch(NullPointerException np){
+		System.err.println(np);
+	}
+	%>
+	</div>
     </c:if>
 </div>
 </body>

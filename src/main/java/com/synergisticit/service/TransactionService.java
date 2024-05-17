@@ -1,10 +1,12 @@
 package com.synergisticit.service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.synergisticit.domain.Account;
@@ -82,8 +84,21 @@ public class TransactionService {
 	public List<Transaction> findByDateBetween(LocalDateTime start, LocalDateTime end){
 		return transactionRepository.findByDateBetween(start, end);
 	}
+	public Page<Transaction> findByDateBetweenForUser(LocalDateTime start, LocalDateTime end, String username, Pageable pageable){
+		return transactionRepository.findByUserUsernameAndDateBetween(username, start, end, pageable);
+	}
 	public List<Transaction> findByDateBetweenForUser(LocalDateTime start, LocalDateTime end, String username){
 		//System.out.println(transactionRepository.findByUserUsernameAndDateBetween(username, start, end));
-		return transactionRepository.findByUserUsernameAndDateBetween(username, start, end);
+		return transactionRepository.findByDateBetweenForUser(start, end, username);
+	}
+	public List<Transaction> findAll(String sortBy) {
+        return transactionRepository.findAll(Sort.by(sortBy));
+    }
+    public Page<Transaction> findAll(Pageable page) {
+        return transactionRepository.findAll(page);
+    }
+	public long getRecordCount() {
+		return transactionRepository.count();
 	}
 }
+
